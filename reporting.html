@@ -1,691 +1,1037 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reporting Vicidial – Complet</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Reporting Vicidial — CRM Complet (Stable Android)</title>
 
 <style>
-body{margin:0;font-family:system-ui,Arial;background:#f4f7ff;color:#0b1220}
-header{position:sticky;top:0;background:#fff;border-bottom:1px solid #dbe1f1;z-index:10}
-.top{max-width:1400px;margin:auto;padding:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center}
-h1{margin:0;font-size:18px;color:#0b57d0}
-.wrap{max-width:1400px;margin:auto;padding:14px}
-.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-.big{font-size:26px;font-weight:900;color:#0b57d0}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{border:1px solid #ccd4ea;padding:6px;white-space:nowrap;vertical-align:top}
-th{background:#eef3ff}
-button{padding:8px 12px;border-radius:10px;border:none;font-weight:900;cursor:pointer}
-.primary{background:#0b57d0;color:#fff}
-.danger{background:#ef4444;color:#fff}
-.soft{background:#eef3ff;color:#0b57d0}
-input,select{padding:8px;border-radius:8px;border:1px solid #ccd4ea;width:100%}
-.small{font-size:12px;color:#666}
-.list div{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px dashed #ccc;padding:6px 0}
-.kv{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef3ff;color:#0b57d0;font-weight:800;font-size:12px}
-hr.sep{border:none;border-top:1px solid #e6ebfb;margin:10px 0}
-.mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  :root{
+    --bg:#f4f7ff; --card:#fff; --text:#0b1220; --muted:rgba(11,18,32,.62);
+    --stroke:#dbe1f1; --shadow:0 10px 30px rgba(0,0,0,.10);
+    --blue:#0b57d0; --red:#e53935; --soft:#eef3ff; --green:#16a34a;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,system-ui;background:var(--bg);color:var(--text)}
+  header{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--stroke)}
+  .top{max-width:1900px;margin:auto;padding:10px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  h1{margin:0;font-size:18px;color:var(--blue)}
+  .wrap{max-width:1900px;margin:auto;padding:12px}
+  .card{background:var(--card);border-radius:var(--radius);padding:12px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+  .big{font-size:22px;font-weight:900;color:var(--blue)}
+  .small{font-size:12px;color:#666}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--blue);font-weight:900;font-size:12px}
+  button{padding:8px 12px;border-radius:10px;border:none;font-weight:900;cursor:pointer}
+  .primary{background:var(--blue);color:#fff}
+  .danger{background:var(--red);color:#fff}
+  .soft{background:var(--soft);color:var(--blue)}
+  .ok{background:var(--green);color:#fff}
+  input,select{padding:8px;border-radius:10px;border:1px solid #ccd4ea;width:100%}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{border:1px solid #ccd4ea;padding:6px;white-space:nowrap;vertical-align:top}
+  th{background:#eef3ff}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed #cbd5e1}
+  .row:last-child{border-bottom:none}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  .errbox{display:none;margin-top:8px;background:#fff2f2;border:1px solid #ffd2d2;color:#7a0b0b;padding:10px;border-radius:12px}
+  .stickybar{position:sticky;bottom:0;z-index:55;background:rgba(244,247,255,.95);backdrop-filter:blur(6px);border-top:1px solid var(--stroke);padding:10px}
+  .stickybar .actions{justify-content:space-between;align-items:center}
+  .modalBack{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:100}
+  .modal{width:min(980px,94vw);background:#fff;border-radius:16px;box-shadow:0 20px 70px rgba(0,0,0,.25);padding:14px}
+  .modal h3{margin:0 0 10px 0}
+  .modal .grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .hint{color:#0b57d0;font-weight:900}
+  a.link{color:#0b57d0;text-decoration:underline}
 </style>
 
-<!-- ✅ SheetJS (Export Excel) -->
+<!-- Firebase COMPAT (stable Android) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
-
 <header>
   <div class="top">
-    <div class="kv">
-      <h1>📊 Reporting Vicidial</h1>
-      <span class="badge">RDV = <b>SALES</b></span>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1>📊 Reporting Vicidial — CRM</h1>
+      <span class="badge">RDV = SALE / SALES</span>
       <span id="filterBadge" class="badge" style="display:none"></span>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="soft" onclick="exportAllExcel()">📥 Export Excel (tout)</button>
-      <button class="soft" onclick="exportFilteredExcel()">📥 Export Excel (filtré)</button>
-      <button onclick="exportAll()">📤 Export CSV tout</button>
-      <button class="danger" onclick="deleteAll()">🧨 Tout supprimer (admin)</button>
-      <button onclick="location.href='index.html'">🏠 Accueil</button>
+    <div class="actions">
+      <button class="soft" onclick="exportExcel('all')">📥 Excel (tout)</button>
+      <button class="soft" onclick="exportExcel('filtered')">📥 Excel (filtré)</button>
+      <button class="danger" onclick="deleteAll()">🧨 Tout supprimer (base)</button>
+      <button class="soft" onclick="location.href='index.html'">🏠 Accueil</button>
     </div>
   </div>
 </header>
 
 <div class="wrap">
 
-<!-- STATS (DOIT SUIVRE LE FILTRE) -->
-<div class="card">
-  <h3>Statistiques (suivant filtre)</h3>
-  <div class="grid">
-    <div><div class="small">Total appels</div><div id="sCalls" class="big">0</div></div>
-    <div><div class="small">Total RDV (SALES)</div><div id="sSales" class="big">0</div></div>
-    <div><div class="small">Agents distincts</div><div id="sAgents" class="big">0</div></div>
+  <!-- STATS -->
+  <div class="card">
+    <div class="grid">
+      <div><div class="small">Total appels</div><div id="sCalls" class="big">0</div></div>
+      <div><div class="small">Total RDV (SALE/SALES)</div><div id="sSales" class="big">0</div></div>
+      <div><div class="small">Agents distincts</div><div id="sAgents" class="big">0</div></div>
+      <div><div class="small">Durée totale (sec)</div><div id="sDur" class="big">0</div></div>
+    </div>
+    <div id="err" class="errbox"></div>
   </div>
-</div>
 
-<!-- PIVOT (DOIT SUIVRE LE FILTRE) -->
-<div class="card">
-  <h3>Pivot (suivant filtre)</h3>
+  <!-- FILTRES -->
+  <div class="card">
+    <h3 style="margin:0 0 8px 0">Filtres</h3>
+    <div class="grid">
+      <div>
+        <div class="small">Date de (appel)</div>
+        <input type="date" id="dFrom" />
+      </div>
+      <div>
+        <div class="small">Date à (appel)</div>
+        <input type="date" id="dTo" />
+      </div>
+      <div>
+        <div class="small">User (agent)</div>
+        <select id="fUser"><option value="">Tous</option></select>
+      </div>
+      <div>
+        <div class="small">Statut</div>
+        <select id="fStatus"><option value="">Tous</option></select>
+      </div>
+      <div>
+        <div class="small">Recherche (mobile / nom / prénom / comments / code / ville)</div>
+        <input id="q" placeholder="ex: 034..., ANDRIA..., Antsirabe, code..." />
+      </div>
+      <div>
+        <div class="small">Actions</div>
+        <div class="actions" style="justify-content:flex-start">
+          <button class="primary" onclick="applyFilters()">Appliquer</button>
+          <button class="soft" onclick="resetFilters()">Réinitialiser</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <div class="grid">
-    <div>
-      <div class="small">Par agent (Appels / SALES)</div>
+  <!-- IMPORT -->
+  <div class="card">
+    <h3 style="margin:0 0 8px 0">Import Vicidial</h3>
+    <div class="grid" style="align-items:end">
+      <div>
+        <div class="small">Fichier TXT/CSV (séparateur ; , ou tab)</div>
+        <input type="file" id="file" accept=".txt,.csv,.tsv" />
+        <div class="small">
+          Colonnes possibles : <span class="mono">call_date, user, status, phone_number, length_in_sec, recording_location, comments</span>
+          + <span class="mono">first_name, last_name, address, city, postal_code, mobile, code_given, rdv_datetime</span>
+        </div>
+      </div>
+      <div>
+        <button class="primary" onclick="importFile()">Valider l’import</button>
+        <div id="msg" class="small"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORIQUE IMPORT -->
+  <div class="card">
+    <h3 style="margin:0 0 8px 0">Historique des imports</h3>
+    <div id="imports" class="small">Chargement…</div>
+    <div class="small" style="margin-top:8px">
+      ✅ “Supprimer base” supprime : (1) l’entrée import (2) les lignes qui n’appartiennent qu’à cet import.  
+      Si une ligne a été importée par plusieurs fichiers, on retire seulement cet import de sa liste.
+    </div>
+  </div>
+
+  <!-- PIVOT DÉTAILLÉ -->
+  <div class="card">
+    <h3 style="margin:0 0 8px 0">Pivot détaillé & statistiques (suivant filtre)</h3>
+    <div class="grid">
+      <div>
+        <div class="small">Par jour</div>
+        <table>
+          <thead><tr><th>Date</th><th>Appels</th><th>RDV</th><th>Durée</th><th>Taux</th></tr></thead>
+          <tbody id="pDay"></tbody>
+        </table>
+      </div>
+      <div>
+        <div class="small">Par agent</div>
+        <table>
+          <thead><tr><th>Agent</th><th>Appels</th><th>RDV</th><th>Durée</th><th>Taux</th><th>Durée moy.</th></tr></thead>
+          <tbody id="pAgent"></tbody>
+        </table>
+      </div>
+      <div>
+        <div class="small">Par statut</div>
+        <table>
+          <thead><tr><th>Status</th><th>Total</th></tr></thead>
+          <tbody id="pStatus"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card">
+    <div class="actions" style="justify-content:space-between;align-items:center">
+      <div>
+        <b>Détails</b>
+        <div class="small">Affichage par lots (anti-crash). Utilisez “Afficher plus”.</div>
+      </div>
+      <div class="actions">
+        <span class="badge">Affichés : <span id="shown">0</span> / <span id="totalFiltered">0</span></span>
+        <button class="soft" onclick="exportExcel('filtered')">Excel filtré</button>
+        <button class="soft" onclick="exportExcel('all')">Excel tout</button>
+        <button class="soft" onclick="exportCSV('filtered')">CSV filtré</button>
+      </div>
+    </div>
+
+    <div style="overflow:auto;margin-top:10px">
       <table>
-        <thead><tr><th>Agent</th><th>Appels</th><th>SALES</th><th>Taux</th></tr></thead>
-        <tbody id="pAgent"></tbody>
+        <thead>
+          <tr>
+            <th>Date appel</th>
+            <th>User</th>
+            <th>Statut</th>
+
+            <th>Mobile</th>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Adresse</th>
+            <th>Ville</th>
+            <th>Code postal</th>
+
+            <th>Code donné</th>
+            <th>Date RDV (manuel)</th>
+
+            <th>Durée (sec)</th>
+            <th>Recording location</th>
+            <th>Comments</th>
+
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
       </table>
     </div>
 
-    <div>
-      <div class="small">Par statut (volume)</div>
-      <table>
-        <thead><tr><th>Status</th><th>Nb</th></tr></thead>
-        <tbody id="pStatus"></tbody>
-      </table>
-    </div>
-
-    <div>
-      <div class="small">Par jour (Appels / SALES)</div>
-      <table>
-        <thead><tr><th>Date</th><th>Appels</th><th>SALES</th></tr></thead>
-        <tbody id="pDay"></tbody>
-      </table>
+    <div class="actions" style="margin-top:10px;justify-content:center">
+      <button class="primary" id="btnMore" onclick="showMore()">Afficher plus</button>
     </div>
   </div>
 </div>
 
-<!-- IMPORT -->
-<div class="card">
-  <h3>Import Vicidial (TXT/CSV/TSV/Excel)</h3>
-  <div class="grid" style="align-items:end">
-    <div>
-      <div class="small">Fichier</div>
-      <input type="file" id="file" accept=".txt,.csv,.tsv,.xls,.xlsx">
-      <div class="small">✅ Dédoublonnage : (1) même fichier bloqué (2) mêmes lignes ignorées.</div>
-    </div>
-    <div>
-      <button class="primary" onclick="importFile()">Valider l’import</button>
-      <div id="importMsg" class="small"></div>
+<div class="stickybar">
+  <div class="actions">
+    <div class="small"><span class="hint">⚠</span> Si tu as beaucoup de lignes : n’affiche pas tout d’un coup. Ici c’est volontairement paginé.</div>
+    <div class="actions">
+      <button class="soft" onclick="showTop()">⬆️ Haut</button>
+      <button class="ok" onclick="applyFilters()">✅ Recalcul</button>
     </div>
   </div>
 </div>
 
-<!-- HISTORIQUE -->
-<div class="card">
-  <h3>Historique des imports</h3>
-  <div id="imports" class="list"></div>
-</div>
+<!-- MODAL MODIFIER -->
+<div class="modalBack" id="modalBack">
+  <div class="modal">
+    <div class="actions" style="justify-content:space-between;align-items:center">
+      <h3>✏️ Modifier</h3>
+      <button class="soft" onclick="closeModal()">✖ Fermer</button>
+    </div>
 
-<!-- FILTRES -->
-<div class="card">
-  <h3>Filtres</h3>
-  <div class="grid">
-    <div>
-      <div class="small">Du</div>
-      <input type="date" id="dFrom">
+    <div class="small">ID : <span id="mId" class="mono"></span></div>
+
+    <div class="grid" style="margin-top:10px">
+      <div><div class="small">Prénom</div><input id="mFirst" /></div>
+      <div><div class="small">Nom</div><input id="mLast" /></div>
+      <div><div class="small">Mobile</div><input id="mMobile" /></div>
+
+      <div><div class="small">Adresse</div><input id="mAddress" /></div>
+      <div><div class="small">Ville</div><input id="mCity" /></div>
+      <div><div class="small">Code postal</div><input id="mPostal" /></div>
+
+      <div><div class="small">Statut</div><input id="mStatus" /></div>
+      <div><div class="small">Code donné</div><input id="mCodeGiven" /></div>
+      <div><div class="small">Date RDV (manuel)</div><input id="mRdv" type="datetime-local" /></div>
+
+      <div><div class="small">Durée d’appel (sec)</div><input id="mLen" type="number" /></div>
+      <div><div class="small">Recording location</div><input id="mRec" /></div>
+      <div style="grid-column:1/-1"><div class="small">Comments</div><input id="mCom" /></div>
     </div>
-    <div>
-      <div class="small">Au</div>
-      <input type="date" id="dTo">
-    </div>
-    <div>
-      <div class="small">Agent</div>
-      <select id="fAgent"><option value="">Tous agents</option></select>
-    </div>
-    <div>
-      <div class="small">Status</div>
-      <select id="fStatus"><option value="">Tous statuts</option></select>
+
+    <div class="actions" style="margin-top:12px;justify-content:flex-start">
+      <button class="primary" onclick="saveEdit()">💾 Enregistrer</button>
+      <button class="danger" onclick="deleteRowFromModal()">🗑 Supprimer</button>
     </div>
   </div>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-    <button class="primary" onclick="apply()">Appliquer</button>
-    <button class="soft" onclick="resetFilters()">Réinitialiser</button>
-    <button onclick="exportFiltered()">📤 Export CSV filtré</button>
-    <button class="soft" onclick="exportFilteredExcel()">📥 Export Excel filtré</button>
-  </div>
 </div>
 
-<!-- TABLE -->
-<div class="card">
-  <h3>Détails</h3>
-  <div class="small">Astuce : le filtre date compare sur le jour (AAAA-MM-JJ) même si l’heure est présente dans <span class="mono">call_date</span>.</div>
-  <hr class="sep">
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Agent</th>
-        <th>Status</th>
-        <th>Téléphone</th>
-        <th>Durée</th>
-        <th>Recording</th>
-        <th>Commentaire</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
-
-</div>
-
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, deleteDoc, doc, setDoc, getDoc,
-  onSnapshot, query, orderBy, serverTimestamp, getDocs, writeBatch, where
-} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-
-/* ===== FIREBASE AXOKIT ===== */
-const firebaseConfig={
+<script>
+/* ======================
+   FIREBASE INIT (COMPAT)
+====================== */
+firebase.initializeApp({
   apiKey:"AIzaSyA-G8P5NokxI6ZaIOMroQrH4x8mp_Q2dgg",
   authDomain:"axokit-crm-ecoles-e56ab.firebaseapp.com",
   projectId:"axokit-crm-ecoles-e56ab"
+});
+const db = firebase.firestore();
+const FieldValue = firebase.firestore.FieldValue;
+
+const CALLS = "vicidial_calls";
+const IMPORTS = "vicidial_imports";
+const ADMIN_PASSWORD = "admin2026";
+
+/* ======================
+   STATE
+====================== */
+let ALL = [];
+let FILTERED = [];
+let shownCount = 0;
+const PAGE_SIZE = 120;
+let editingId = null;
+
+const $ = (id)=>document.getElementById(id);
+
+function showError(msg){
+  const box = $("err");
+  box.style.display = "block";
+  box.textContent = msg;
+}
+function clearError(){
+  const box = $("err");
+  box.style.display = "none";
+  box.textContent = "";
+}
+
+/* Anti “fermeture” : capturer erreurs */
+window.onerror = function(message, source, lineno){
+  showError("Erreur JS : " + message + " (ligne " + lineno + ")");
+  return true;
 };
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+window.onunhandledrejection = function(e){
+  showError("Promise rejetée : " + (e && e.reason ? (e.reason.message || e.reason) : "inconnue"));
+};
 
-/* ===== COLLECTIONS ===== */
-const CALLS="vicidial_calls";
-const IMPORTS="vicidial_imports";
-
-/* ===== CONSTANTS ===== */
-const SALES="SALE";             // si vos fichiers ont "SALE"
-const SALES_ALT="SALES";        // si certains exports ont "SALES"
-const ADMIN_PASSWORD="admin2026";
-
-let ALL=[], FILTERED=[];
-
-/* =========================
+/* ======================
    HELPERS
-========================= */
-const $=id=>document.getElementById(id);
-
-function normalizeStatus(s){
-  return String(s||"").toUpperCase().trim();
-}
-function salesMatch(status){
-  const st=normalizeStatus(status);
-  return st===SALES || st===SALES_ALT;
-}
-function toDateKey(call_date){
-  const s=String(call_date||"").trim();
-  // prend AAAA-MM-JJ si présent (même si "2026-02-11 10:30:00")
+====================== */
+function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
+function normStatus(s){ return safe(s).toUpperCase().trim(); }
+function isSale(s){ const st = normStatus(s); return st==="SALE" || st==="SALES"; }
+function dateKey(call_date){
+  const s = safe(call_date);
   const m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
-  if(m) return `${m[1]}-${m[2]}-${m[3]}`;
-  // fallback : si format inconnu, on renvoie vide (ne casse pas le filtre)
-  return "";
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : "";
 }
-function dateToInt(yyyy_mm_dd){
-  if(!yyyy_mm_dd) return NaN;
-  const [y,m,d]=yyyy_mm_dd.split("-").map(Number);
-  return (y*10000)+(m*100)+d;
+function detectSep(line){
+  if(line.includes("\t")) return "\t";
+  if(line.includes(";")) return ";";
+  return ",";
 }
 function fnv1a(str){
-  let h=0x811c9dc5;
+  let h = 0x811c9dc5;
   for(let i=0;i<str.length;i++){
-    h^=str.charCodeAt(i);
+    h ^= str.charCodeAt(i);
     h = (h + ((h<<1) + (h<<4) + (h<<7) + (h<<8) + (h<<24))) >>> 0;
   }
   return ("00000000"+h.toString(16)).slice(-8);
 }
-function safeCell(v){
-  // pour CSV/Excel, éviter les undefined/null
-  return (v===undefined || v===null) ? "" : String(v);
+function makeDocId(dedupeKey){
+  return fnv1a(dedupeKey) + fnv1a(dedupeKey+"|2") + fnv1a(dedupeKey+"|3"); // 24 hex
+}
+function pickObj(obj, ...keys){
+  const lower = {};
+  Object.keys(obj).forEach(k=> lower[String(k).toLowerCase().trim()] = obj[k]);
+  for(const k of keys){
+    const kk = String(k).toLowerCase().trim();
+    if(lower[kk] !== undefined) return lower[kk];
+  }
+  return "";
+}
+function csvEscape(v){
+  const s = safe(v).replace(/\r?\n/g," ");
+  if(s.includes(";") || s.includes('"')) return `"${s.replace(/"/g,'""')}"`;
+  return s;
 }
 
-/* =========================
-   LIVE DATA
-========================= */
-onSnapshot(query(collection(db, CALLS), orderBy("createdAt","desc")), snap=>{
-  ALL = snap.docs.map(d=>({id:d.id, ...d.data()}));
-  buildFilterOptions();
-  apply(); // recalcul stats + pivot + table
-});
+/* ======================
+   LIVE DATA (limité pour stabilité)
+====================== */
+function loadLive(){
+  clearError();
 
-onSnapshot(query(collection(db, IMPORTS), orderBy("createdAt","desc")), snap=>{
-  $("imports").innerHTML = snap.docs.map(d=>{
-    const data=d.data();
-    const name = safeCell(data.fileName);
-    const fp = safeCell(data.fingerprint);
-    return `
-      <div>
-        <div>
-          <b>${name}</b><br>
-          <span class="small mono">${fp ? "fp:"+fp : ""}</span>
+  db.collection(CALLS).orderBy("createdAt","desc").limit(1500).onSnapshot(snap=>{
+    ALL = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    buildFilterOptions();
+    applyFilters();
+  }, err=>{
+    showError("Firestore CALLS : " + err.message);
+  });
+
+  db.collection(IMPORTS).orderBy("createdAt","desc").limit(200).onSnapshot(snap=>{
+    if(snap.empty){
+      $("imports").innerHTML = "Aucun import";
+      return;
+    }
+    $("imports").innerHTML = snap.docs.map(d=>{
+      const it = d.data();
+      const when = it.createdAt && it.createdAt.toDate ? it.createdAt.toDate().toLocaleString() : "";
+      return `
+        <div class="row">
+          <div>
+            <b>${safe(it.fileName)}</b> <span class="small">${when}</span><br>
+            <span class="small mono">importId: ${d.id}</span>
+          </div>
+          <div class="actions">
+            <button class="soft" onclick="exportExcel('import','${d.id}')">Excel</button>
+            <button class="soft" onclick="exportCSV('import','${d.id}')">CSV</button>
+            <button class="danger" onclick="deleteImport('${d.id}')">Supprimer base</button>
+          </div>
         </div>
-        <span style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-          <button onclick="exportImportExcel('${d.id}')">Excel</button>
-          <button onclick="exportImport('${d.id}')">CSV</button>
-          <button class="danger" onclick="deleteImport('${d.id}')">Supprimer (base)</button>
-        </span>
-      </div>
-    `;
-  }).join("");
-});
+      `;
+    }).join("");
+  }, err=>{
+    showError("Firestore IMPORTS : " + err.message);
+  });
+}
+loadLive();
 
-/* =========================
+/* ======================
    FILTER OPTIONS
-========================= */
+====================== */
 function uniqSorted(arr){
   return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b)));
 }
 function buildFilterOptions(){
-  const agents = uniqSorted(ALL.map(r=>r.user));
-  const statuses = uniqSorted(ALL.map(r=>normalizeStatus(r.status)));
-  const aSel=$("fAgent"), sSel=$("fStatus");
+  const users = uniqSorted(ALL.map(r=>r.user));
+  const statuses = uniqSorted(ALL.map(r=>normStatus(r.status)));
 
-  const currentA=aSel.value, currentS=sSel.value;
+  const curU = $("fUser").value;
+  const curS = $("fStatus").value;
 
-  aSel.innerHTML = `<option value="">Tous agents</option>` + agents.map(a=>`<option value="${String(a).replaceAll('"','&quot;')}">${a}</option>`).join("");
-  sSel.innerHTML = `<option value="">Tous statuts</option>` + statuses.map(s=>`<option value="${String(s).replaceAll('"','&quot;')}">${s}</option>`).join("");
+  $("fUser").innerHTML = `<option value="">Tous</option>` + users.map(u=>`<option value="${u.replaceAll('"','&quot;')}">${u}</option>`).join("");
+  $("fStatus").innerHTML = `<option value="">Tous</option>` + statuses.map(s=>`<option value="${s.replaceAll('"','&quot;')}">${s}</option>`).join("");
 
-  // restaurer si existant
-  if(agents.includes(currentA)) aSel.value=currentA;
-  if(statuses.includes(currentS)) sSel.value=currentS;
+  if(users.includes(curU)) $("fUser").value = curU;
+  if(statuses.includes(curS)) $("fStatus").value = curS;
 }
 
-/* =========================
-   IMPORT (TXT/CSV/TSV/EXCEL)
-   - bloque si même fichier (fingerprint déjà importé)
-   - dédoublonne par clé (docId = hash(dedupeKey))
-========================= */
-window.importFile = async()=>{
-  const f = $("file").files[0];
-  if(!f){ $("importMsg").innerText="Veuillez sélectionner un fichier."; return; }
+/* ======================
+   FILTERS
+====================== */
+window.resetFilters = function(){
+  $("dFrom").value = "";
+  $("dTo").value = "";
+  $("fUser").value = "";
+  $("fStatus").value = "";
+  $("q").value = "";
+  applyFilters();
+};
 
-  $("importMsg").innerText="Lecture du fichier...";
+window.applyFilters = function(){
+  clearError();
 
-  // fingerprint pour bloquer ré-import strictement identique
-  const headChunk = await f.slice(0, 2000).text().catch(()=> "");
-  const fingerprint = fnv1a([f.name, f.size, f.lastModified, headChunk].join("|"));
+  const from = $("dFrom").value;
+  const to = $("dTo").value;
+  const user = $("fUser").value;
+  const status = $("fStatus").value;
+  const q = $("q").value.trim().toLowerCase();
 
-  // si fingerprint existe -> on bloque
-  const existsSnap = await getDocs(query(collection(db, IMPORTS), where("fingerprint","==", fingerprint)));
-  if(!existsSnap.empty){
-    $("importMsg").innerText="Ce fichier a déjà été importé (même fingerprint). Import annulé.";
-    return;
-  }
+  FILTERED = ALL.filter(r=>{
+    const dk = dateKey(r.call_date);
+    if(from && dk && dk < from) return false;
+    if(to && dk && dk > to) return false;
+    if((from || to) && !dk) return false;
 
-  // créer doc import
-  const imp = await addDoc(collection(db, IMPORTS), {
-    fileName: f.name,
-    size: f.size,
-    lastModified: f.lastModified,
-    fingerprint,
-    createdAt: serverTimestamp()
+    if(user && safe(r.user) !== user) return false;
+    if(status && normStatus(r.status) !== normStatus(status)) return false;
+
+    if(q){
+      const hay = [
+        r.mobile, r.phone_number, r.first_name, r.last_name, r.address, r.city, r.postal_code,
+        r.comments, r.user, r.status, r.recording_location, r.code_given, r.rdv_datetime
+      ].map(safe).join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
   });
 
-  // lire contenu selon type
-  const ext = (f.name.split(".").pop()||"").toLowerCase();
-  let rows = []; // tableau d'objets {col:val}
-
-  try{
-    if(ext==="xls" || ext==="xlsx"){
-      const buf = await f.arrayBuffer();
-      const wb = window.XLSX.read(buf, {type:"array"});
-      const wsName = wb.SheetNames[0];
-      const ws = wb.Sheets[wsName];
-      rows = window.XLSX.utils.sheet_to_json(ws, {defval:""});
-    }else{
-      const text = await f.text();
-      const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
-      if(lines.length<2){ $("importMsg").innerText="Fichier vide ou sans données."; return; }
-
-      const sep = lines[0].includes("\t") ? "\t" : (lines[0].includes(";") ? ";" : ",");
-      const headers = lines[0].split(sep).map(x=>String(x||"").trim());
-      for(let i=1;i<lines.length;i++){
-        const cells = lines[i].split(sep);
-        const obj = {};
-        headers.forEach((h,idx)=> obj[h]= (cells[idx]===undefined ? "" : cells[idx]));
-        rows.push(obj);
-      }
-    }
-  }catch(e){
-    console.error(e);
-    $("importMsg").innerText="Erreur de lecture. Vérifiez le format du fichier.";
-    return;
-  }
-
-  // mapping headers : accepte variantes
-  const pick = (o, ...names)=>{
-    for(const n of names){
-      const k = Object.keys(o).find(x=>String(x).toLowerCase().trim()===String(n).toLowerCase().trim());
-      if(k!==undefined) return o[k];
-    }
-    return "";
-  };
-
-  $("importMsg").innerText=`Import en cours... (${rows.length} lignes)`;
-
-  let inserted=0, skipped=0;
-
-  // batch par paquets pour performance
-  const CHUNK=350;
-
-  for(let start=0; start<rows.length; start+=CHUNK){
-    const b = writeBatch(db);
-    let ops=0;
-
-    for(let i=start;i<Math.min(rows.length,start+CHUNK);i++){
-      const r = rows[i];
-
-      const call_date = safeCell(pick(r,"call_date","call date","date","date_time","call_datetime"));
-      const user = safeCell(pick(r,"user","agent","full_name","username"));
-      const phone_number = safeCell(pick(r,"phone_number","phone number","phone","tel","telephone"));
-      const status = normalizeStatus(pick(r,"status","dispo","disposition"));
-      const length = Number(pick(r,"length_in_sec","length","length_sec","duration","durée") || 0);
-      const recording = safeCell(pick(r,"recording_location","recording location","recording","recording_url","recording file"));
-      const comments = safeCell(pick(r,"comments","commentaire","comment","note","notes"));
-
-      // clé de dédoublonnage (ligne)
-      const dedupeKey = [toDateKey(call_date)||call_date, user, phone_number, status].join("|").trim();
-      const docId = fnv1a(dedupeKey); // => même doc si même ligne
-
-      const ref = doc(db, CALLS, docId);
-      const exists = await getDoc(ref);
-
-      if(exists.exists()){
-        skipped++;
-        continue;
-      }
-
-      b.set(ref,{
-        call_date, user, status, phone_number,
-        length, recording, comments,
-        dedupeKey,
-        importId: imp.id,
-        createdAt: serverTimestamp()
-      });
-
-      inserted++;
-      ops++;
-    }
-
-    if(ops>0) await b.commit();
-  }
-
-  $("importMsg").innerText=`Import terminé ✅ Nouveaux: ${inserted} | Doublons ignorés: ${skipped}`;
-  $("file").value="";
-};
-
-/* =========================
-   APPLY FILTERS + STATS + PIVOT + TABLE
-========================= */
-window.resetFilters=()=>{
-  $("dFrom").value="";
-  $("dTo").value="";
-  $("fAgent").value="";
-  $("fStatus").value="";
-  apply();
-};
-
-window.apply = ()=>{
-  // base
-  let rows = [...ALL];
-
-  // date range (compare sur AAAA-MM-JJ)
-  const from = $("dFrom").value; // yyyy-mm-dd
-  const to = $("dTo").value;
-
-  const fromInt = from ? dateToInt(from) : null;
-  const toInt = to ? dateToInt(to) : null;
-
-  if(fromInt || toInt){
-    rows = rows.filter(r=>{
-      const dk = toDateKey(r.call_date);
-      const di = dateToInt(dk);
-      if(Number.isNaN(di)) return false; // si pas de date parsable, on exclut en mode filtre date
-      if(fromInt && di < fromInt) return false;
-      if(toInt && di > toInt) return false;
-      return true;
-    });
-  }
-
-  // agent
-  const agent = $("fAgent").value;
-  if(agent){
-    rows = rows.filter(r=>String(r.user||"")===String(agent));
-  }
-
-  // status
-  const status = $("fStatus").value;
-  if(status){
-    rows = rows.filter(r=>normalizeStatus(r.status)===normalizeStatus(status));
-  }
-
-  FILTERED = rows;
-
-  // badge filtre
   const parts=[];
-  if(from) parts.push(`Du ${from}`);
-  if(to) parts.push(`Au ${to}`);
-  if(agent) parts.push(`Agent: ${agent}`);
-  if(status) parts.push(`Status: ${normalizeStatus(status)}`);
+  if(from) parts.push("De "+from);
+  if(to) parts.push("À "+to);
+  if(user) parts.push("User: "+user);
+  if(status) parts.push("Statut: "+normStatus(status));
+  if(q) parts.push("Recherche: "+q);
   if(parts.length){
     $("filterBadge").style.display="inline-block";
-    $("filterBadge").innerText="Filtre: " + parts.join(" • ");
+    $("filterBadge").textContent="Filtre: " + parts.join(" • ");
   }else{
     $("filterBadge").style.display="none";
+    $("filterBadge").textContent="";
   }
 
-  // stats suivant filtre
-  let sales=0;
-  const agentsSet=new Set();
-  FILTERED.forEach(r=>{
-    if(salesMatch(r.status)) sales++;
-    if(r.user) agentsSet.add(r.user);
-  });
+  $("tbody").innerHTML = "";
+  shownCount = 0;
+  $("totalFiltered").textContent = FILTERED.length;
+  $("shown").textContent = 0;
+  $("btnMore").disabled = false;
+  $("btnMore").textContent = "Afficher plus";
 
-  $("sCalls").innerText = FILTERED.length;
-  $("sSales").innerText = sales;
-  $("sAgents").innerText = agentsSet.size;
-
-  // pivot suivant filtre
-  renderPivot(FILTERED);
-
-  // table
-  $("tbody").innerHTML = FILTERED.map(r=>`
-    <tr>
-      <td>${safeCell(r.call_date)}</td>
-      <td>${safeCell(r.user)}</td>
-      <td>${safeCell(normalizeStatus(r.status))}</td>
-      <td>${safeCell(r.phone_number)}</td>
-      <td>${safeCell(r.length)}</td>
-      <td>${safeCell(r.recording)}</td>
-      <td>${safeCell(r.comments)}</td>
-      <td><button class="danger" onclick="del('${r.id}')">Supprimer</button></td>
-    </tr>
-  `).join("");
+  showMore();
+  renderStats();
+  renderPivot();
 };
 
-function renderPivot(rows){
-  // par agent
+function renderStats(){
+  let sales=0, dur=0;
+  const agents = new Set();
+  FILTERED.forEach(r=>{
+    if(isSale(r.status)) sales++;
+    dur += Number(r.call_length || 0);
+    if(r.user) agents.add(r.user);
+  });
+  $("sCalls").textContent = FILTERED.length;
+  $("sSales").textContent = sales;
+  $("sAgents").textContent = agents.size;
+  $("sDur").textContent = dur;
+}
+
+/* ======================
+   TABLE (pagination)
+====================== */
+window.showMore = function(){
+  const start = shownCount;
+  const end = Math.min(shownCount + PAGE_SIZE, FILTERED.length);
+  if(start >= end){
+    $("btnMore").disabled = true;
+    $("btnMore").textContent = "Fin";
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+
+  for(let i=start; i<end; i++){
+    const r = FILTERED[i];
+    const tr = document.createElement("tr");
+
+    const mobile = safe(r.mobile || r.phone_number);
+    const rdv = safe(r.rdv_datetime);
+    const rec = safe(r.recording_location);
+
+    tr.innerHTML = `
+      <td>${safe(r.call_date)}</td>
+      <td>${safe(r.user)}</td>
+      <td>${safe(normStatus(r.status))}</td>
+
+      <td>${mobile}</td>
+      <td>${safe(r.first_name)}</td>
+      <td>${safe(r.last_name)}</td>
+      <td>${safe(r.address)}</td>
+      <td>${safe(r.city)}</td>
+      <td>${safe(r.postal_code)}</td>
+
+      <td>${safe(r.code_given)}</td>
+      <td>${rdv}</td>
+
+      <td>${safe(r.call_length)}</td>
+      <td>${rec ? `<a class="link" href="${rec}" target="_blank" rel="noopener">ouvrir</a>` : ""}</td>
+      <td>${safe(r.comments)}</td>
+
+      <td class="actions">
+        <button class="soft" onclick="openEdit('${r.id}')">✏️ Modifier</button>
+        <button class="danger" onclick="deleteRow('${r.id}')">🗑</button>
+      </td>
+    `;
+    frag.appendChild(tr);
+  }
+
+  $("tbody").appendChild(frag);
+  shownCount = end;
+  $("shown").textContent = shownCount;
+
+  if(shownCount >= FILTERED.length){
+    $("btnMore").disabled = true;
+    $("btnMore").textContent = "Fin";
+  }
+};
+
+window.showTop = function(){
+  window.scrollTo({top:0, behavior:"smooth"});
+};
+
+/* ======================
+   PIVOT DÉTAILLÉ
+====================== */
+function renderPivot(){
+  const byDay = new Map();
   const byAgent = new Map();
   const byStatus = new Map();
-  const byDay = new Map();
 
-  rows.forEach(r=>{
-    const a = safeCell(r.user) || "(Sans agent)";
-    const st = normalizeStatus(r.status) || "(Sans status)";
-    const day = toDateKey(r.call_date) || "(Date inconnue)";
+  for(const r of FILTERED){
+    const day = dateKey(r.call_date) || "(date inconnue)";
+    const agent = safe(r.user) || "(sans agent)";
+    const st = normStatus(r.status) || "(sans status)";
+    const dur = Number(r.call_length || 0);
+    const sale = isSale(st);
 
-    if(!byAgent.has(a)) byAgent.set(a,{calls:0,sales:0});
-    byAgent.get(a).calls++;
-    if(salesMatch(st)) byAgent.get(a).sales++;
+    if(!byDay.has(day)) byDay.set(day, {calls:0,sales:0,dur:0});
+    const D = byDay.get(day); D.calls++; if(sale) D.sales++; D.dur += dur;
 
-    byStatus.set(st, (byStatus.get(st)||0) + 1);
+    if(!byAgent.has(agent)) byAgent.set(agent, {calls:0,sales:0,dur:0});
+    const A = byAgent.get(agent); A.calls++; if(sale) A.sales++; A.dur += dur;
 
-    if(!byDay.has(day)) byDay.set(day,{calls:0,sales:0});
-    byDay.get(day).calls++;
-    if(salesMatch(st)) byDay.get(day).sales++;
-  });
+    byStatus.set(st, (byStatus.get(st)||0)+1);
+  }
 
-  const agentRows = [...byAgent.entries()]
-    .sort((x,y)=> y[1].calls - x[1].calls)
-    .map(([agent,v])=>{
+  $("pDay").innerHTML = [...byDay.entries()]
+    .sort((a,b)=> (a[0] < b[0] ? 1 : -1))
+    .map(([d,v])=>{
       const rate = v.calls ? Math.round((v.sales/v.calls)*100) : 0;
-      return `<tr><td>${agent}</td><td>${v.calls}</td><td>${v.sales}</td><td>${rate}%</td></tr>`;
-    }).join("");
+      return `<tr><td>${d}</td><td>${v.calls}</td><td>${v.sales}</td><td>${v.dur}</td><td>${rate}%</td></tr>`;
+    }).join("") || `<tr><td colspan="5" class="small">Aucune donnée</td></tr>`;
 
-  const statusRows = [...byStatus.entries()]
-    .sort((x,y)=> y[1]-x[1])
-    .map(([st,n])=> `<tr><td>${st}</td><td>${n}</td></tr>`)
-    .join("");
+  $("pAgent").innerHTML = [...byAgent.entries()]
+    .sort((a,b)=> b[1].calls - a[1].calls)
+    .map(([a,v])=>{
+      const rate = v.calls ? Math.round((v.sales/v.calls)*100) : 0;
+      const avg = v.calls ? Math.round(v.dur / v.calls) : 0;
+      return `<tr><td>${a}</td><td>${v.calls}</td><td>${v.sales}</td><td>${v.dur}</td><td>${rate}%</td><td>${avg}</td></tr>`;
+    }).join("") || `<tr><td colspan="6" class="small">Aucune donnée</td></tr>`;
 
-  const dayRows = [...byDay.entries()]
-    .sort((x,y)=> (dateToInt(y[0])||0) - (dateToInt(x[0])||0)) // desc
-    .slice(0, 60) // éviter trop long
-    .map(([day,v])=> `<tr><td>${day}</td><td>${v.calls}</td><td>${v.sales}</td></tr>`)
-    .join("");
-
-  $("pAgent").innerHTML = agentRows || `<tr><td colspan="4" class="small">Aucune donnée</td></tr>`;
-  $("pStatus").innerHTML = statusRows || `<tr><td colspan="2" class="small">Aucune donnée</td></tr>`;
-  $("pDay").innerHTML = dayRows || `<tr><td colspan="3" class="small">Aucune donnée</td></tr>`;
+  $("pStatus").innerHTML = [...byStatus.entries()]
+    .sort((a,b)=> b[1]-a[1])
+    .map(([s,n])=>`<tr><td>${s}</td><td>${n}</td></tr>`)
+    .join("") || `<tr><td colspan="2" class="small">Aucune donnée</td></tr>`;
 }
 
-/* =========================
-   DELETE
-========================= */
-window.del = async(id)=>{
-  if(!confirm("Supprimer cette ligne ?")) return;
-  await deleteDoc(doc(db, CALLS, id));
-};
+/* ======================
+   IMPORT (TXT/CSV/TSV)
+   - Historique import
+   - Dédoublonnage par docId stable
+   - importIds[] : permet deleteImport propre
+====================== */
+window.importFile = async function(){
+  clearError();
+  const f = $("file").files[0];
+  if(!f){ $("msg").textContent = "Veuillez choisir un fichier."; return; }
 
-// supprime "ce fichier" (import) + toutes les lignes liées (base)
-window.deleteImport = async(importId)=>{
-  if(!confirm("Supprimer cet import ET toutes ses lignes de la base ?")) return;
+  $("msg").textContent = "Création import…";
 
-  // supprimer calls de cet import
-  const callsSnap = await getDocs(query(collection(db, CALLS), where("importId","==", importId)));
-  const b = writeBatch(db);
-  callsSnap.forEach(d=> b.delete(d.ref));
-
-  // supprimer import
-  b.delete(doc(db, IMPORTS, importId));
-  await b.commit();
-};
-
-window.deleteAll = async()=>{
-  const pass = prompt("Mot de passe admin :");
-  if(pass!==ADMIN_PASSWORD) { alert("Accès refusé."); return; }
-  if(!confirm("SUPPRIMER TOUT LE REPORTING (BASE + IMPORTS) ?")) return;
-
-  const b = writeBatch(db);
-
-  const c = await getDocs(collection(db, CALLS));
-  c.forEach(d=>b.delete(d.ref));
-
-  const i = await getDocs(collection(db, IMPORTS));
-  i.forEach(d=>b.delete(d.ref));
-
-  await b.commit();
-};
-
-/* =========================
-   EXPORT (CSV + EXCEL)
-   - Export filtré = FILTERED
-   - Export import = filtre importId
-========================= */
-function csv(rows){
-  let s="call_date;user;status;phone;length;recording;comments\n";
-  rows.forEach(r=>{
-    s += `${safeCell(r.call_date)};${safeCell(r.user)};${safeCell(normalizeStatus(r.status))};${safeCell(r.phone_number)};${safeCell(r.length)};${safeCell(r.recording)};${safeCell(r.comments)}\n`;
+  // créer import
+  const importRef = db.collection(IMPORTS).doc();
+  await importRef.set({
+    fileName: f.name,
+    createdAt: FieldValue.serverTimestamp()
   });
-  return s;
-}
-function dl(name, txt, mime="text/csv"){
+
+  // lire texte
+  const text = await new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = e=>resolve(String(e.target.result||""));
+    fr.onerror = ()=>reject(new Error("Lecture fichier impossible"));
+    fr.readAsText(f);
+  }).catch(e=>{
+    showError(e.message);
+    $("msg").textContent = "Erreur lecture fichier.";
+  });
+  if(!text) return;
+
+  const lines = text.split(/\r?\n/).filter(l=>l.trim().length);
+  if(lines.length < 2){ $("msg").textContent = "Fichier vide."; return; }
+
+  const sep = detectSep(lines[0]);
+  const headers = lines[0].split(sep).map(h=>h.trim().toLowerCase());
+
+  const idx = (name)=> headers.indexOf(String(name).toLowerCase());
+
+  // helper get cell
+  const cell = (arr, name)=>{
+    const i = idx(name);
+    return i>=0 ? (arr[i] ?? "") : "";
+  };
+
+  let processed = 0;
+  let committed = 0;
+
+  $("msg").textContent = "Import en cours…";
+
+  const CHUNK = 320;
+  for(let start=1; start<lines.length; start+=CHUNK){
+    const batch = db.batch();
+    let ops = 0;
+
+    for(let i=start; i<Math.min(lines.length, start+CHUNK); i++){
+      const c = lines[i].split(sep);
+
+      const call_date = String(cell(c,"call_date") || "").trim();
+      const user = String(cell(c,"user") || "").trim();
+      const status = normStatus(cell(c,"status") || "");
+      const phone_number = String(cell(c,"phone_number") || "").trim();
+      const mobile = String(cell(c,"mobile") || phone_number).trim();
+
+      if(!call_date || !user || !mobile) continue;
+
+      const day = dateKey(call_date) || call_date;
+      const dedupeKey = [day, user, mobile, status].join("|");
+      const docId = makeDocId(dedupeKey);
+
+      // champs CRM
+      const first_name = String(cell(c,"first_name") || "").trim();
+      const last_name = String(cell(c,"last_name") || "").trim();
+      const address = String(cell(c,"address") || "").trim();
+      const city = String(cell(c,"city") || "").trim();
+      const postal_code = String(cell(c,"postal_code") || "").trim();
+
+      // vicidial
+      const call_length = Number(cell(c,"length_in_sec") || 0);
+      const recording_location = String(cell(c,"recording_location") || "").trim();
+      const comments = String(cell(c,"comments") || "").trim();
+
+      // optionnels si présents dans fichier
+      const code_given = String(cell(c,"code_given") || "").trim();
+      const rdv_datetime = String(cell(c,"rdv_datetime") || "").trim();
+
+      const ref = db.collection(CALLS).doc(docId);
+
+      // merge:true pour ne pas écraser les champs manuels si la colonne est absente
+      const payload = {
+        call_date,
+        user,
+        status,
+        phone_number,
+        mobile,
+
+        first_name,
+        last_name,
+        address,
+        city,
+        postal_code,
+
+        call_length,
+        recording_location,
+        comments,
+
+        // si le fichier contient ces champs, ils seront mis à jour, sinon non (car string vide -> on évite)
+        ...(code_given ? { code_given } : {}),
+        ...(rdv_datetime ? { rdv_datetime } : {}),
+
+        dedupeKey,
+        importIds: FieldValue.arrayUnion(importRef.id),
+        createdAt: FieldValue.serverTimestamp()
+      };
+
+      batch.set(ref, payload, { merge:true });
+      ops++;
+      processed++;
+    }
+
+    if(ops){
+      await batch.commit();
+      committed += ops;
+    }
+  }
+
+  $("msg").textContent = `Import terminé ✅ Lignes traitées: ${processed} | Écritures: ${committed}`;
+  $("file").value = "";
+};
+
+/* ======================
+   HISTORIQUE : DELETE IMPORT
+   - supprime calls si importIds == [importId]
+   - sinon retire importId de importIds
+====================== */
+window.deleteImport = async function(importId){
+  clearError();
+  if(!confirm("Supprimer cet import de la base ? (lignes + historique)")) return;
+
+  let touched = 0;
+  let deleted = 0;
+  let updated = 0;
+
+  while(true){
+    const snap = await db.collection(CALLS).where("importIds","array-contains",importId).limit(250).get();
+    if(snap.empty) break;
+
+    const batch = db.batch();
+    snap.docs.forEach(d=>{
+      const data = d.data() || {};
+      const arr = Array.isArray(data.importIds) ? data.importIds : [];
+      touched++;
+
+      if(arr.length <= 1){
+        batch.delete(d.ref);
+        deleted++;
+      }else{
+        batch.update(d.ref, { importIds: FieldValue.arrayRemove(importId) });
+        updated++;
+      }
+    });
+
+    await batch.commit();
+  }
+
+  await db.collection(IMPORTS).doc(importId).delete();
+  alert(`Import supprimé ✅\nLignes touchées: ${touched}\nSupprimées: ${deleted}\nMises à jour: ${updated}`);
+};
+
+/* ======================
+   MODIFIER / SUPPRIMER
+====================== */
+window.openEdit = function(id){
+  clearError();
+  const row = ALL.find(x=>x.id===id);
+  if(!row){ showError("Ligne introuvable."); return; }
+
+  editingId = id;
+
+  $("mId").textContent = id;
+  $("mFirst").value = safe(row.first_name);
+  $("mLast").value = safe(row.last_name);
+  $("mMobile").value = safe(row.mobile || row.phone_number);
+  $("mAddress").value = safe(row.address);
+  $("mCity").value = safe(row.city);
+  $("mPostal").value = safe(row.postal_code);
+
+  $("mStatus").value = safe(normStatus(row.status));
+  $("mCodeGiven").value = safe(row.code_given);
+
+  // datetime-local veut "YYYY-MM-DDTHH:MM"
+  const rdv = safe(row.rdv_datetime);
+  $("mRdv").value = rdv.includes("T") ? rdv : rdv.replace(" ", "T");
+
+  $("mLen").value = Number(row.call_length || 0);
+  $("mRec").value = safe(row.recording_location);
+  $("mCom").value = safe(row.comments);
+
+  $("modalBack").style.display = "flex";
+};
+
+window.closeModal = function(){
+  $("modalBack").style.display = "none";
+  editingId = null;
+};
+
+window.saveEdit = async function(){
+  clearError();
+  if(!editingId) return;
+
+  const payload = {
+    first_name: $("mFirst").value || "",
+    last_name: $("mLast").value || "",
+    mobile: $("mMobile").value || "",
+    address: $("mAddress").value || "",
+    city: $("mCity").value || "",
+    postal_code: $("mPostal").value || "",
+
+    status: normStatus($("mStatus").value || ""),
+    code_given: $("mCodeGiven").value || "",
+    rdv_datetime: ($("mRdv").value || ""), // on garde tel quel
+    call_length: Number($("mLen").value || 0),
+    recording_location: $("mRec").value || "",
+    comments: $("mCom").value || "",
+    updatedAt: FieldValue.serverTimestamp()
+  };
+
+  await db.collection(CALLS).doc(editingId).update(payload);
+  closeModal();
+};
+
+window.deleteRowFromModal = async function(){
+  if(!editingId) return;
+  if(!confirm("Supprimer cette ligne ?")) return;
+  await db.collection(CALLS).doc(editingId).delete();
+  closeModal();
+};
+
+window.deleteRow = async function(id){
+  if(!confirm("Supprimer cette ligne ?")) return;
+  await db.collection(CALLS).doc(id).delete();
+};
+
+/* ======================
+   TOUT SUPPRIMER (ADMIN)
+====================== */
+window.deleteAll = async function(){
+  clearError();
+  const pass = prompt("Mot de passe admin :");
+  if(pass !== ADMIN_PASSWORD){ alert("Accès refusé."); return; }
+  if(!confirm("SUPPRIMER TOUT (CALLS + IMPORTS) ?")) return;
+
+  // delete calls par pages
+  while(true){
+    const snap = await db.collection(CALLS).limit(300).get();
+    if(snap.empty) break;
+    const b = db.batch();
+    snap.docs.forEach(d=>b.delete(d.ref));
+    await b.commit();
+  }
+  // delete imports par pages
+  while(true){
+    const snap = await db.collection(IMPORTS).limit(300).get();
+    if(snap.empty) break;
+    const b = db.batch();
+    snap.docs.forEach(d=>b.delete(d.ref));
+    await b.commit();
+  }
+
+  alert("Suppression totale terminée ✅");
+};
+
+/* ======================
+   EXPORTS (CSV + EXCEL)
+====================== */
+window.exportCSV = function(mode, importId){
+  const rows =
+    mode === "filtered" ? FILTERED :
+    mode === "import" ? ALL.filter(r => Array.isArray(r.importIds) && r.importIds.includes(importId)) :
+    ALL;
+
+  let out = [
+    "call_date","user","status",
+    "mobile","first_name","last_name","address","city","postal_code",
+    "code_given","rdv_datetime",
+    "call_length","recording_location","comments","importIds"
+  ].join(";") + "\n";
+
+  rows.forEach(r=>{
+    out += [
+      csvEscape(r.call_date),
+      csvEscape(r.user),
+      csvEscape(normStatus(r.status)),
+
+      csvEscape(r.mobile || r.phone_number),
+      csvEscape(r.first_name),
+      csvEscape(r.last_name),
+      csvEscape(r.address),
+      csvEscape(r.city),
+      csvEscape(r.postal_code),
+
+      csvEscape(r.code_given),
+      csvEscape(r.rdv_datetime),
+
+      csvEscape(r.call_length),
+      csvEscape(r.recording_location),
+      csvEscape(r.comments),
+      csvEscape((r.importIds||[]).join(","))
+    ].join(";") + "\n";
+  });
+
   const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([txt],{type:mime}));
-  a.download=name;
+  a.href=URL.createObjectURL(new Blob([out],{type:"text/csv"}));
+  a.download = mode==="filtered" ? "reporting_filtre.csv" : (mode==="import" ? "reporting_import.csv" : "reporting_tout.csv");
   a.click();
-}
+};
 
-function toExcel(rows, filename){
+window.exportExcel = function(mode, importId){
+  clearError();
+
+  const rows =
+    mode === "filtered" ? FILTERED :
+    mode === "import" ? ALL.filter(r => Array.isArray(r.importIds) && r.importIds.includes(importId)) :
+    ALL;
+
   const data = rows.map(r=>({
-    call_date: safeCell(r.call_date),
-    user: safeCell(r.user),
-    status: safeCell(normalizeStatus(r.status)),
-    phone: safeCell(r.phone_number),
-    length: safeCell(r.length),
-    recording: safeCell(r.recording),
-    comments: safeCell(r.comments),
-    importId: safeCell(r.importId||"")
+    call_date: safe(r.call_date),
+    user: safe(r.user),
+    status: safe(normStatus(r.status)),
+
+    mobile: safe(r.mobile || r.phone_number),
+    first_name: safe(r.first_name),
+    last_name: safe(r.last_name),
+    address: safe(r.address),
+    city: safe(r.city),
+    postal_code: safe(r.postal_code),
+
+    code_given: safe(r.code_given),
+    rdv_datetime: safe(r.rdv_datetime),
+
+    call_length: Number(r.call_length || 0),
+    recording_location: safe(r.recording_location),
+    comments: safe(r.comments),
+
+    importIds: (r.importIds||[]).join(",")
   }));
-  const ws = window.XLSX.utils.json_to_sheet(data);
-  const wb = window.XLSX.utils.book_new();
-  window.XLSX.utils.book_append_sheet(wb, ws, "reporting");
 
-  // + un onglet pivot simple (agent/status/jour) suivant filtre en cours
-  const pivot = buildPivotSheet(FILTERED);
-  const ws2 = window.XLSX.utils.aoa_to_sheet(pivot);
-  window.XLSX.utils.book_append_sheet(wb, ws2, "pivot_filtre");
+  const wb = XLSX.utils.book_new();
+  const ws1 = XLSX.utils.json_to_sheet(data);
+  XLSX.utils.book_append_sheet(wb, ws1, "reporting");
 
-  window.XLSX.writeFile(wb, filename);
-}
+  // Pivot sheet
+  const pivotAOA = [];
+  const total = rows.length;
+  const totalRdv = rows.filter(r=>isSale(r.status)).length;
+  const totalDur = rows.reduce((a,r)=>a+Number(r.call_length||0),0);
 
-function buildPivotSheet(rows){
-  const out = [];
-  out.push(["PIVOT (suivant filtre actuel)"]);
-  out.push(["Total appels", rows.length]);
-  out.push(["Total SALES", rows.filter(r=>salesMatch(r.status)).length]);
-  out.push([]);
+  pivotAOA.push(["PIVOT"]);
+  pivotAOA.push(["Total appels", total]);
+  pivotAOA.push(["Total RDV (SALE/SALES)", totalRdv]);
+  pivotAOA.push(["Durée totale (sec)", totalDur]);
+  pivotAOA.push([]);
 
-  // agent
+  // by agent
   const byA = new Map();
   rows.forEach(r=>{
-    const a = safeCell(r.user) || "(Sans agent)";
-    if(!byA.has(a)) byA.set(a,{calls:0,sales:0});
-    byA.get(a).calls++;
-    if(salesMatch(r.status)) byA.get(a).sales++;
+    const a = safe(r.user) || "(sans agent)";
+    if(!byA.has(a)) byA.set(a,{calls:0,sales:0,dur:0});
+    const v = byA.get(a);
+    v.calls++; if(isSale(r.status)) v.sales++; v.dur += Number(r.call_length||0);
   });
-  out.push(["Par agent"]);
-  out.push(["Agent","Appels","SALES","Taux"]);
+  pivotAOA.push(["Par agent"]);
+  pivotAOA.push(["Agent","Appels","RDV","Durée","Taux","Durée moyenne"]);
   [...byA.entries()].sort((x,y)=>y[1].calls-x[1].calls).forEach(([a,v])=>{
-    const rate = v.calls ? Math.round((v.sales/v.calls)*100) + "%" : "0%";
-    out.push([a, v.calls, v.sales, rate]);
+    const rate = v.calls ? Math.round((v.sales/v.calls)*100) : 0;
+    const avg = v.calls ? Math.round(v.dur/v.calls) : 0;
+    pivotAOA.push([a, v.calls, v.sales, v.dur, rate+"%", avg]);
   });
+  pivotAOA.push([]);
 
-  out.push([]);
-  // status
-  const byS = new Map();
-  rows.forEach(r=>{
-    const s = normalizeStatus(r.status) || "(Sans status)";
-    byS.set(s,(byS.get(s)||0)+1);
-  });
-  out.push(["Par status"]);
-  out.push(["Status","Nb"]);
-  [...byS.entries()].sort((x,y)=>y[1]-x[1]).forEach(([s,n])=> out.push([s,n]));
-
-  out.push([]);
-  // day
+  // by day
   const byD = new Map();
   rows.forEach(r=>{
-    const d = toDateKey(r.call_date) || "(Date inconnue)";
-    if(!byD.has(d)) byD.set(d,{calls:0,sales:0});
-    byD.get(d).calls++;
-    if(salesMatch(r.status)) byD.get(d).sales++;
+    const d = dateKey(r.call_date) || "(date inconnue)";
+    if(!byD.has(d)) byD.set(d,{calls:0,sales:0,dur:0});
+    const v = byD.get(d);
+    v.calls++; if(isSale(r.status)) v.sales++; v.dur += Number(r.call_length||0);
   });
-  out.push(["Par jour"]);
-  out.push(["Date","Appels","SALES"]);
-  [...byD.entries()].sort((x,y)=> (dateToInt(x[0])||0)-(dateToInt(y[0])||0)).forEach(([d,v])=>{
-    out.push([d,v.calls,v.sales]);
+  pivotAOA.push(["Par jour"]);
+  pivotAOA.push(["Date","Appels","RDV","Durée","Taux"]);
+  [...byD.entries()].sort((a,b)=> (a[0]<b[0]?1:-1)).forEach(([d,v])=>{
+    const rate = v.calls ? Math.round((v.sales/v.calls)*100) : 0;
+    pivotAOA.push([d, v.calls, v.sales, v.dur, rate+"%"]);
   });
+  pivotAOA.push([]);
 
-  return out;
-}
+  // by status
+  const byS = new Map();
+  rows.forEach(r=>{
+    const s = normStatus(r.status) || "(sans status)";
+    byS.set(s,(byS.get(s)||0)+1);
+  });
+  pivotAOA.push(["Par status"]);
+  pivotAOA.push(["Status","Total"]);
+  [...byS.entries()].sort((a,b)=>b[1]-a[1]).forEach(([s,n])=>pivotAOA.push([s,n]));
 
-window.exportAll = ()=> dl("reporting_tout.csv", csv(ALL));
-window.exportFiltered = ()=> dl("reporting_filtre.csv", csv(FILTERED));
-window.exportImport = (id)=> dl("reporting_import.csv", csv(ALL.filter(r=>r.importId===id)));
+  const ws2 = XLSX.utils.aoa_to_sheet(pivotAOA);
+  XLSX.utils.book_append_sheet(wb, ws2, "pivot");
 
-window.exportAllExcel = ()=> toExcel(ALL, "reporting_tout.xlsx");
-window.exportFilteredExcel = ()=> toExcel(FILTERED, "reporting_filtre.xlsx");
-window.exportImportExcel = (id)=> toExcel(ALL.filter(r=>r.importId===id), "reporting_import.xlsx");
+  const filename =
+    mode==="filtered" ? "reporting_filtre.xlsx" :
+    mode==="import" ? "reporting_import.xlsx" :
+    "reporting_tout.xlsx";
+
+  XLSX.writeFile(wb, filename);
+};
+
+/* ======================
+   FIRST APPLY
+====================== */
+setTimeout(()=>{ try{ applyFilters(); }catch(e){} }, 0);
 </script>
-
 </body>
 </html>
