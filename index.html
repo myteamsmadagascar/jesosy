@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>CRM — RDV • Épargne & Audit</title>
+<meta name="theme-color" content="#0b57d0" />
+
+<style>
+  :root{
+    --bg:#f4f7ff; --card:#fff; --text:#0b1220; --muted:rgba(11,18,32,.62);
+    --stroke:rgba(15,23,42,.12); --shadow:0 18px 60px rgba(0,0,0,.08);
+    --blue:#0b57d0; --green:#16a34a; --orange:#f59e0b; --red:#ef4444;
+    --neon:#00f5ff;
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--text);
+    background:linear-gradient(180deg,#fff 0%, var(--bg) 45%, #fff 100%);
+  }
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--stroke);
+  }
+  .topbar{
+    max-width:1200px; margin:0 auto; padding:12px 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  }
+  .brand{display:flex; gap:10px; align-items:center}
+  .logo{
+    width:46px; height:40px; border-radius:14px; background:#fff; border:1px solid var(--stroke);
+    display:grid; place-items:center; font-weight:950; color:var(--blue);
+    box-shadow:0 10px 25px rgba(11,87,208,.10);
+    user-select:none;
+  }
+  .title{line-height:1.05}
+  .title b{display:block; font-size:15px}
+  .title span{display:block; font-size:12px; color:var(--muted)}
+  .pill{
+    font-size:12px; font-weight:950;
+    padding:8px 10px; border-radius:999px;
+    background:rgba(11,87,208,.08);
+    border:1px solid rgba(11,87,208,.16);
+    color:#06337a; white-space:nowrap;
+  }
+  .wrap{max-width:1200px; margin:0 auto; padding:14px 14px 120px}
+  .card{
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--stroke);
+    border-radius:var(--r);
+    box-shadow:var(--shadow);
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .hidden{display:none !important}
+  .btn{
+    border:0; border-radius:14px; padding:10px 12px;
+    font-weight:950; cursor:pointer; transition:.12s ease;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    user-select:none; text-decoration:none;
+  }
+  .btn:active{transform:scale(.99)}
+  .btn.primary{background:linear-gradient(135deg,var(--blue),#2f7bff); color:#fff; box-shadow:0 14px 32px rgba(11,87,208,.18)}
+  .btn.ghost{background:#fff; border:1px solid var(--stroke); color:var(--text)}
+  .btn.danger{background:linear-gradient(135deg,var(--red),#fb7185); color:#fff}
+  .btn.neon{
+    background:var(--neon); color:#001b1e;
+    box-shadow:0 0 10px var(--neon), 0 0 22px var(--neon);
+  }
+  .btn.small{padding:9px 10px; border-radius:12px; font-size:13px}
+  .input, select, textarea{
+    width:100%; padding:12px 12px; border-radius:14px; border:1px solid var(--stroke);
+    background:#fff; outline:none; font-size:14px;
+    box-shadow:0 10px 22px rgba(0,0,0,.04);
+  }
+  textarea{min-height:90px; resize:vertical}
+  label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .three{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
+  .four{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px}
+  @media (max-width:980px){ .four,.three{grid-template-columns:1fr} }
+  @media (max-width:560px){ .two{grid-template-columns:1fr} }
+  .divider{height:1px; background:rgba(15,23,42,.10); margin:12px 0}
+  .hint{font-size:12px; color:var(--muted)}
+  .tableWrap{
+    border:1px solid var(--stroke);
+    border-radius:14px;
+    overflow:auto;
+    max-height:62vh;
+    background:#fff;
+  }
+  table{width:100%; border-collapse:separate; border-spacing:0}
+  th,td{border-bottom:1px solid var(--stroke); padding:10px 8px; font-size:12px; vertical-align:top}
+  th{position:sticky; top:0; background:#f3f7ff; z-index:1; text-align:left; color:#0b1f4a}
+  tr:hover td{background:#fbfdff}
+  .tag{
+    display:inline-block; padding:3px 8px; border-radius:999px; font-size:11px; font-weight:950;
+    border:1px solid var(--stroke); background:#fff;
+  }
+  .tag.rdv{border-color:rgba(22,163,74,.25); background:rgba(22,163,74,.10); color:#0b3d1a}
+  .tag.rap{border-color:rgba(245,158,11,.30); background:rgba(245,158,11,.12); color:#2a1800}
+  .tag.autre{border-color:rgba(100,116,139,.25); background:rgba(100,116,139,.10); color:#223044}
+  .toast{
+    position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+    background:rgba(11,18,32,.92); border:1px solid rgba(255,255,255,.16);
+    color:#fff; padding:10px 12px; border-radius:14px;
+    font-size:13px; font-weight:950; z-index:999; display:none; max-width:92vw;
+  }
+  .check{width:18px;height:18px;accent-color:var(--blue)}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">EA</div>
+      <div class="title">
+        <b>CRM — Épargne & Audit</b>
+        <span>RDV • Prospects • Temps réel (Firebase Axokit) • Export Excel</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span id="pillUser" class="pill">Non connecté</span>
+      <span id="pillCount" class="pill">0 prospect(s)</span>
+      <button id="btnLoginTop" class="btn ghost small">👤 Connexion</button>
+      <button id="btnLogoutTop" class="btn danger small hidden">🚪 Déconnexion</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <section id="loginCard" class="card">
+    <b style="font-weight:950">Connexion</b>
+
+    <div class="two" style="margin-top:10px">
+      <div>
+        <label>Rôle</label>
+        <select id="role" class="input">
+          <option>TA1</option><option>TA2</option><option>TA3</option><option>TA4</option><option>TA5</option>
+          <option>Client</option>
+          <option value="Admin">Admin</option>
+          <option value="Custom">Nom libre…</option>
+        </select>
+      </div>
+      <div>
+        <label>Nom affiché</label>
+        <input id="displayName" class="input" placeholder="Ex : Agent 1 / Naomi (facultatif)" />
+      </div>
+    </div>
+
+    <div id="customRoleBox" class="hidden">
+      <label>Nom du rôle (libre)</label>
+      <input id="customRole" class="input" placeholder="Ex : Coach / Quality / Superviseur" />
+    </div>
+
+    <div id="adminBox" class="hidden">
+      <label>Mot de passe Admin</label>
+      <input id="adminPass" type="password" class="input" placeholder="admin2026" />
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+      <button id="btnLogin" class="btn primary" style="flex:1">Se connecter</button>
+      <button id="btnLogout" class="btn danger hidden" style="flex:1">Se déconnecter</button>
+    </div>
+
+    <div id="loginMsg" class="hint" style="margin-top:10px"></div>
+    <div id="fbMsg" class="hint" style="margin-top:6px"></div>
+  </section>
+
+  <!-- APP -->
+  <section id="appCard" class="hidden">
+
+    <!-- TOP ACTIONS -->
+    <section class="card">
+      <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap">
+        <div>
+          <b style="font-weight:950">Actions</b>
+          <div class="hint">Tout est partagé en temps réel via Firebase Axokit.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="reporting.html" class="btn neon small" style="text-decoration:none">📊 REPORTING</a>
+          <button id="btnExportFiltered" class="btn ghost small">📤 Export (filtre)</button>
+          <button id="btnExportAll" class="btn ghost small">📤 Export (tout)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORM -->
+    <section class="card">
+      <b style="font-weight:950">Ajouter / Modifier un prospect</b>
+      <div class="hint">Aucun champ obligatoire. Date/heure possibles mais facultatives.</div>
+
+      <div class="four" style="margin-top:10px">
+        <div>
+          <label>Nom</label>
+          <input id="f_nom" class="input" placeholder="Nom (facultatif)">
+        </div>
+        <div>
+          <label>Prénom</label>
+          <input id="f_prenom" class="input" placeholder="Prénom (facultatif)">
+        </div>
+        <div>
+          <label>Téléphone</label>
+          <input id="f_tel" class="input" placeholder="Tel (facultatif)">
+        </div>
+        <div>
+          <label>Mobile</label>
+          <input id="f_mobile" class="input" placeholder="Mobile (facultatif)">
+        </div>
+      </div>
+
+      <div class="three">
+        <div>
+          <label>Épargne</label>
+          <input id="f_epargne" class="input" placeholder="Ex : 50 000 Ar / 200€ (facultatif)">
+        </div>
+        <div>
+          <label>Code donné</label>
+          <input id="f_code" class="input" placeholder="Code (facultatif)">
+        </div>
+        <div>
+          <label>Statut</label>
+          <select id="f_statut" class="input">
+            <option value="RDV">RDV</option>
+            <option value="À rappeler">À rappeler</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="two">
+        <div>
+          <label>RDV — Date & heure</label>
+          <input id="f_rdv" class="input" type="datetime-local">
+        </div>
+        <div>
+          <label>Agent </label>
+          <input id="f_agent" class="input" placeholder="Agent (facultatif)">
+        </div>
+      </div>
+
+      <label>Commentaire</label>
+      <textarea id="f_comment" class="input" placeholder="Commentaire (facultatif)"></textarea>
+
+      <div class="divider"></div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button id="btnSave" class="btn primary">💾 Enregistrer</button>
+        <button id="btnClear" class="btn ghost">🧹 Vider</button>
+        <button id="btnDelete" class="btn danger hidden">🗑 Supprimer (Admin)</button>
+        <span id="editPill" class="pill hidden">Mode modification</span>
+      </div>
+
+      <div id="saveMsg" class="hint" style="margin-top:10px"></div>
+    </section>
+
+    <!-- FILTERS -->
+    <section class="card">
+      <b style="font-weight:950">Filtres</b>
+      <div class="hint">Filtrer et exporter uniquement ce qui est affiché.</div>
+
+      <div class="four" style="margin-top:10px">
+        <div>
+          <label>Statut</label>
+          <select id="fltStatut" class="input">
+            <option value="">Tous</option>
+            <option value="RDV">RDV</option>
+            <option value="À rappeler">À rappeler</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <div>
+          <label>Agent</label>
+          <select id="fltAgent" class="input">
+            <option value="">Tous</option>
+          </select>
+        </div>
+        <div>
+          <label>Date (RDV) début</label>
+          <input id="fltFrom" class="input" type="date">
+        </div>
+        <div>
+          <label>Date (RDV) fin</label>
+          <input id="fltTo" class="input" type="date">
+        </div>
+      </div>
+
+      <div class="two">
+        <div>
+          <label>Recherche</label>
+          <input id="fltQ" class="input" placeholder="Nom, prénom, tel, mobile, code, commentaire...">
+        </div>
+        <div>
+          <label>Affichage</label>
+          <select id="fltLimit" class="input">
+            <option value="200" selected>200</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+            <option value="999999">Tout</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <button id="btnApply" class="btn primary small">Appliquer</button>
+        <button id="btnResetFilters" class="btn ghost small">Réinitialiser</button>
+      </div>
+    </section>
+
+    <!-- TABLE -->
+    <section class="card">
+      <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap">
+        <div>
+          <b style="font-weight:950">Tableau prospects</b>
+          <div class="hint">Sélectionnez des lignes pour exporter uniquement la sélection.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="btnExportSelected" class="btn ghost small">📤 Export (sélection)</button>
+        </div>
+      </div>
+
+      <div class="tableWrap" style="margin-top:10px">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:44px"><input id="cbAll" type="checkbox" class="check"></th>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Tél</th>
+              <th>Mobile</th>
+              <th>Épargne</th>
+              <th>Code</th>
+              <th>Statut</th>
+              <th>RDV</th>
+              <th>Agent</th>
+              <th>Commentaire</th>
+              <th>Modifié</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td colspan="13" class="hint">Aucune donnée.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </section>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+  // =========================
+  // Firebase (Axokit config)
+  // =========================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, doc, updateDoc, deleteDoc,
+    onSnapshot, query, orderBy, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA-G8P5NokxI6ZaIOMroQrH4x8mp_Q2dgg",
+    authDomain: "axokit-crm-ecoles-e56ab.firebaseapp.com",
+    projectId: "axokit-crm-ecoles-e56ab",
+    storageBucket: "axokit-crm-ecoles-e56ab.firebasestorage.app",
+    messagingSenderId: "832744598173",
+    appId: "1:832744598173:web:ee8a39ac6099f987e64274"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // =========================
+  // Helpers
+  // =========================
+  const $ = (id)=>document.getElementById(id);
+  const STORE_KEY = "EA_CRM_USER";
+  const ADMIN_PASS = "admin2026";
+  const colRef = collection(db, "ea_crm_prospects"); // collection partagée
+
+  function toast(msg){
+    const t=$("toast");
+    t.textContent=msg;
+    t.style.display="block";
+    clearTimeout(t._t);
+    t._t=setTimeout(()=>t.style.display="none", 2200);
+  }
+  function norm(v){
+    return (v==null?"":(""+v)).replace(/\u00a0/g," ").replace(/\s+/g," ").trim();
+  }
+  function esc(s){
+    s = (s==null?"":""+s);
+    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function tagClass(st){
+    if(st==="RDV") return "rdv";
+    if(st==="À rappeler") return "rap";
+    return "autre";
+  }
+  function toDateOnly(isoOrLocal){
+    // Accept "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm"
+    if(!isoOrLocal) return "";
+    return (""+isoOrLocal).slice(0,10);
+  }
+
+  // =========================
+  // Login UI
+  // =========================
+  let CURRENT_USER = null; // {role, name, isAdmin, roleLabel}
+  let EDIT_ID = null;
+
+  $("role").addEventListener("change", ()=>{
+    const r = $("role").value;
+    $("customRoleBox").classList.toggle("hidden", r!=="Custom");
+    $("adminBox").classList.toggle("hidden", r!=="Admin");
+  });
+
+  $("btnLoginTop").onclick = ()=>{ $("loginCard").scrollIntoView({behavior:"smooth"}); };
+
+  $("btnLogin").onclick = ()=>{
+    const baseRole = $("role").value;
+    let roleLabel = baseRole;
+    if(baseRole==="Custom"){
+      roleLabel = norm($("customRole").value) || "Nom libre";
+    }
+    const name = norm($("displayName").value) || "Utilisateur";
+    const isAdmin = baseRole==="Admin";
+
+    if(isAdmin){
+      if($("adminPass").value !== ADMIN_PASS){
+        $("loginMsg").textContent = "Mot de passe Admin incorrect.";
+        return;
+      }
+    }
+
+    CURRENT_USER = { role: baseRole, roleLabel, name, isAdmin };
+    localStorage.setItem(STORE_KEY, JSON.stringify(CURRENT_USER));
+    showApp();
+    toast("Connecté");
+  };
+
+  $("btnLogout").onclick = logout;
+  $("btnLogoutTop").onclick = logout;
+
+  function logout(){
+    localStorage.removeItem(STORE_KEY);
+    location.reload();
+  }
+
+  function showApp(){
+    $("loginCard").classList.add("hidden");
+    $("appCard").classList.remove("hidden");
+    $("btnLoginTop").classList.add("hidden");
+    $("btnLogoutTop").classList.remove("hidden");
+
+    $("pillUser").textContent = `${CURRENT_USER.name} — ${CURRENT_USER.roleLabel}`;
+    $("loginMsg").textContent = "";
+  }
+
+  // Auto-login
+  const saved = localStorage.getItem(STORE_KEY);
+  if(saved){
+    try{
+      CURRENT_USER = JSON.parse(saved);
+      if(CURRENT_USER && CURRENT_USER.name) showApp();
+    }catch(e){}
+  }
+
+  // =========================
+  // Firestore realtime (all see same)
+  // =========================
+  let ALL = []; // all docs cached
+  const qAll = query(colRef, orderBy("updatedAt", "desc"));
+
+  $("fbMsg").textContent = "Firebase : connexion…";
+  onSnapshot(qAll, (snap)=>{
+    ALL = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    $("fbMsg").textContent = `Firebase : OK • ${ALL.length} élément(s)`;
+    rebuildAgentFilter();
+    applyFiltersAndRender();
+  }, (err)=>{
+    console.error(err);
+    $("fbMsg").textContent = "Firebase : erreur (vérifier droits Firestore / connexion).";
+  });
+
+  function rebuildAgentFilter(){
+    const set = new Set();
+    ALL.forEach(x=> set.add(norm(x.agent)));
+    const vals = [...set].filter(Boolean).sort((a,b)=>a.localeCompare(b));
+    const sel = $("fltAgent");
+    const current = sel.value;
+    sel.innerHTML = `<option value="">Tous</option>` + vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+    if(vals.includes(current)) sel.value = current;
+  }
+
+  // =========================
+  // Form actions
+  // =========================
+  $("btnClear").onclick = ()=>{
+    EDIT_ID = null;
+    $("btnDelete").classList.add("hidden");
+    $("editPill").classList.add("hidden");
+    clearForm();
+    toast("Formulaire vidé");
+  };
+
+  $("btnSave").onclick = async ()=>{
+    if(!CURRENT_USER){
+      toast("Veuillez vous connecter");
+      return;
+    }
+    const agent = norm($("f_agent").value) || `${CURRENT_USER.name} (${CURRENT_USER.roleLabel})`;
+
+    const payload = {
+      nom: norm($("f_nom").value),
+      prenom: norm($("f_prenom").value),
+      tel: norm($("f_tel").value),
+      mobile: norm($("f_mobile").value),
+      epargne: norm($("f_epargne").value),
+      code: norm($("f_code").value),
+      statut: $("f_statut").value || "RDV",
+      rdv: $("f_rdv").value || "", // datetime-local string
+      commentaire: norm($("f_comment").value),
+      agent,
+      updatedAt: serverTimestamp(),
+      updatedBy: `${CURRENT_USER.name} — ${CURRENT_USER.roleLabel}`
+    };
+
+    try{
+      if(EDIT_ID){
+        await updateDoc(doc(db, "ea_crm_prospects", EDIT_ID), payload);
+        toast("Modifié");
+      }else{
+        await addDoc(colRef, { ...payload, createdAt: serverTimestamp(), createdBy: payload.updatedBy });
+        toast("Ajouté");
+      }
+      EDIT_ID=null;
+      $("btnDelete").classList.add("hidden");
+      $("editPill").classList.add("hidden");
+      clearForm();
+    }catch(e){
+      console.error(e);
+      toast("Erreur enregistrement");
+    }
+  };
+
+  $("btnDelete").onclick = async ()=>{
+    if(!CURRENT_USER?.isAdmin){
+      toast("Suppression réservée à Admin");
+      return;
+    }
+    if(!EDIT_ID) return;
+    if(!confirm("Supprimer ce prospect ?")) return;
+    try{
+      await deleteDoc(doc(db, "ea_crm_prospects", EDIT_ID));
+      toast("Supprimé");
+      EDIT_ID=null;
+      $("btnDelete").classList.add("hidden");
+      $("editPill").classList.add("hidden");
+      clearForm();
+    }catch(e){
+      console.error(e);
+      toast("Erreur suppression");
+    }
+  };
+
+  function clearForm(){
+    ["f_nom","f_prenom","f_tel","f_mobile","f_epargne","f_code","f_rdv","f_agent","f_comment"].forEach(id=>$(id).value="");
+    $("f_statut").value = "RDV";
+    $("saveMsg").textContent = "";
+  }
+
+  // =========================
+  // Filters + Render
+  // =========================
+  $("btnApply").onclick = applyFiltersAndRender;
+  $("btnResetFilters").onclick = ()=>{
+    $("fltStatut").value="";
+    $("fltAgent").value="";
+    $("fltFrom").value="";
+    $("fltTo").value="";
+    $("fltQ").value="";
+    $("fltLimit").value="200";
+    applyFiltersAndRender();
+  };
+
+  $("cbAll").addEventListener("change", ()=>{
+    const on = $("cbAll").checked;
+    document.querySelectorAll(".rowCB").forEach(cb=>cb.checked = on);
+  });
+
+  function passFilters(x){
+    const st = $("fltStatut").value;
+    const ag = $("fltAgent").value;
+    const q  = norm($("fltQ").value).toLowerCase();
+    const from = $("fltFrom").value;
+    const to   = $("fltTo").value;
+
+    if(st && (x.statut||"") !== st) return false;
+    if(ag && norm(x.agent) !== ag) return false;
+
+    if(from || to){
+      const d = toDateOnly(x.rdv);
+      if(from && d && d < from) return false;
+      if(to && d && d > to) return false;
+      // si pas de rdvDate, on laisse passer (pas bloquant)
+    }
+
+    if(q){
+      const hay = [
+        x.nom,x.prenom,x.tel,x.mobile,x.epargne,x.code,x.statut,x.rdv,x.agent,x.commentaire,x.updatedBy
+      ].map(norm).join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  }
+
+  function applyFiltersAndRender(){
+    const limit = parseInt($("fltLimit").value || "200", 10);
+    const filtered = ALL.filter(passFilters).slice(0, limit);
+
+    $("pillCount").textContent = `${ALL.length} prospect(s)`;
+    renderTable(filtered);
+  }
+
+  function renderTable(rows){
+    $("cbAll").checked = false;
+    if(!rows.length){
+      $("tbody").innerHTML = `<tr><td colspan="13" class="hint">Aucune donnée.</td></tr>`;
+      return;
+    }
+
+    const isAdmin = !!CURRENT_USER?.isAdmin;
+
+    $("tbody").innerHTML = rows.map(x=>{
+      const st = x.statut || "Autre";
+      const rdv = x.rdv || "";
+      const upd = x.updatedBy || "";
+      const updAt = x.updatedAt?.toDate ? x.updatedAt.toDate() : null;
+      const updTxt = updAt ? updAt.toLocaleString() : "";
+
+      return `
+        <tr>
+          <td><input class="rowCB check" type="checkbox" data-id="${esc(x.id)}"></td>
+          <td>${esc(x.nom||"")}</td>
+          <td>${esc(x.prenom||"")}</td>
+          <td>${esc(x.tel||"")}</td>
+          <td>${esc(x.mobile||"")}</td>
+          <td>${esc(x.epargne||"")}</td>
+          <td>${esc(x.code||"")}</td>
+          <td><span class="tag ${tagClass(st)}">${esc(st)}</span></td>
+          <td>${esc(rdv)}</td>
+          <td>${esc(x.agent||"")}</td>
+          <td>${esc(x.commentaire||"")}</td>
+          <td>
+            <div style="font-size:11px;color:rgba(11,18,32,.62)">${esc(upd)}</div>
+            <div style="font-size:11px;color:rgba(11,18,32,.55)">${esc(updTxt)}</div>
+          </td>
+          <td>
+            <button class="btn ghost small" data-edit="${esc(x.id)}">✏️</button>
+            ${isAdmin ? `<button class="btn danger small" data-del="${esc(x.id)}">🗑️</button>` : ``}
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    // bind edit/delete
+    document.querySelectorAll("[data-edit]").forEach(b=>{
+      b.onclick = ()=>{
+        const id = b.getAttribute("data-edit");
+        const item = ALL.find(z=>z.id===id);
+        if(!item) return;
+        EDIT_ID = id;
+
+        $("f_nom").value = item.nom || "";
+        $("f_prenom").value = item.prenom || "";
+        $("f_tel").value = item.tel || "";
+        $("f_mobile").value = item.mobile || "";
+        $("f_epargne").value = item.epargne || "";
+        $("f_code").value = item.code || "";
+        $("f_statut").value = item.statut || "RDV";
+        $("f_rdv").value = item.rdv || "";
+        $("f_agent").value = item.agent || "";
+        $("f_comment").value = item.commentaire || "";
+
+        $("editPill").classList.remove("hidden");
+        if(CURRENT_USER?.isAdmin) $("btnDelete").classList.remove("hidden");
+        $("saveMsg").textContent = "Vous modifiez un prospect (enregistré en temps réel).";
+        toast("Mode modification");
+        window.scrollTo({top:0, behavior:"smooth"});
+      };
+    });
+
+    document.querySelectorAll("[data-del]").forEach(b=>{
+      b.onclick = async ()=>{
+        if(!CURRENT_USER?.isAdmin){
+          toast("Suppression réservée à Admin");
+          return;
+        }
+        const id = b.getAttribute("data-del");
+        if(!confirm("Supprimer ce prospect ?")) return;
+        try{
+          await deleteDoc(doc(db, "ea_crm_prospects", id));
+          toast("Supprimé");
+          if(EDIT_ID===id){
+            EDIT_ID=null;
+            $("btnDelete").classList.add("hidden");
+            $("editPill").classList.add("hidden");
+            clearForm();
+          }
+        }catch(e){
+          console.error(e);
+          toast("Erreur suppression");
+        }
+      };
+    });
+  }
+
+  // =========================
+  // Export CSV (Excel)
+  // =========================
+  function rowsToCSV(rows){
+    const headers = [
+      "nom","prenom","tel","mobile","epargne","code","statut","rdv","agent","commentaire","updatedBy"
+    ];
+    const sep = ";";
+    let out = headers.join(sep) + "\n";
+    for(const r of rows){
+      out += headers.map(h=>{
+        let v = r[h]==null ? "" : ""+r[h];
+        v = v.replace(/"/g,'""');
+        return `"${v}"`;
+      }).join(sep) + "\n";
+    }
+    return out;
+  }
+  function downloadCSV(filename, csv){
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+
+    // IMPORTANT Android/Chrome
+    document.body.appendChild(a);
+    a.click();
+
+    setTimeout(()=>{
+      a.remove();
+      URL.revokeObjectURL(url);
+    }, 150);
+  }
+
+  function currentFilteredRows(){
+    const limit = parseInt($("fltLimit").value || "200", 10);
+    return ALL.filter(passFilters).slice(0, limit);
+  }
+
+  $("btnExportAll").onclick = ()=>{
+    const rows = ALL.slice().reverse(); // oldest->newest optional
+    if(!rows.length){ toast("Aucune donnée"); return; }
+    downloadCSV("crm_export_tout.csv", rowsToCSV(rows));
+    toast("Export tout");
+  };
+
+  $("btnExportFiltered").onclick = ()=>{
+    const rows = currentFilteredRows();
+    if(!rows.length){ toast("Aucune donnée"); return; }
+    downloadCSV("crm_export_filtre.csv", rowsToCSV(rows));
+    toast("Export filtre");
+  };
+
+  $("btnExportSelected").onclick = ()=>{
+    const ids = [...document.querySelectorAll(".rowCB:checked")].map(cb=>cb.getAttribute("data-id"));
+    const rows = ALL.filter(x=>ids.includes(x.id));
+    if(!rows.length){ toast("Aucune sélection"); return; }
+    downloadCSV("crm_export_selection.csv", rowsToCSV(rows));
+    toast("Export sélection");
+  };
+
+  // =========================
+  // Init default dates (optional)
+  // =========================
+  (function initDates(){
+    // laisse vide par défaut (aucune contrainte)
+  })();
+
+</script>
+
+</body>
+</html>
